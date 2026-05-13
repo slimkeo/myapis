@@ -1,0 +1,13 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/snatbur1/myapis.snatburialscheme.com/
+
+    - /bin/mkdir -p $DEPLOYPATH
+
+    - /bin/cp -R config $DEPLOYPATH
+    - /bin/cp -R controllers $DEPLOYPATH
+    - /bin/cp -R helpers $DEPLOYPATH
+    - /bin/cp -R middleware $DEPLOYPATH
+
+    - /bin/cp -f index.php $DEPLOYPATH/
