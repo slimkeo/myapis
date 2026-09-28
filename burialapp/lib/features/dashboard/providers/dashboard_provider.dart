@@ -18,13 +18,15 @@ class DashboardProvider with ChangeNotifier {
 
     try {
       final response = await ApiClient().get('dashboard');
-      if (response.data['success']) {
-        _dashboard = DashboardModel.fromJson(response.data['data']);
+      if (response.data['success'] == true) {
+        _dashboard = DashboardModel.fromJson(
+          Map<String, dynamic>.from(response.data['data'] as Map),
+        );
       } else {
-        _errorMessage = response.data['message'] ?? 'Failed to load dashboard';
+        _errorMessage = response.data['message']?.toString() ?? 'Failed to load dashboard';
       }
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiClient.errorMessage(e);
     } finally {
       _isLoading = false;
       notifyListeners();

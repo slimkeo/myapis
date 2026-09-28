@@ -1,5 +1,6 @@
 class ClaimModel {
   final String id;
+  final String? claimType;
   final String beneficiary;
   final double amount;
   final String claimDate;
@@ -9,10 +10,11 @@ class ClaimModel {
 
   ClaimModel.fromJson(Map<String, dynamic> json)
     : id = json['id'].toString(),
-      beneficiary = json['beneficiary'] ?? 'N/A',
+      claimType = json['claim_type']?.toString(),
+      beneficiary = (json['beneficiary'] ?? 'N/A').toString(),
       amount = double.tryParse(json['amount'].toString()) ?? 0.0,
-      claimDate = json['claim_date'] ?? '',
-      status = json['status'] ?? 'Pending',
-      approvedDate = json['approved_date'],
-      paymentDate = json['payment_date'];
+      claimDate = (json['claim_date'] ?? '').toString(),
+      status = (json['status'] ?? 'Pending').toString(),
+      approvedDate = json['approved_date']?.toString(),
+      paymentDate = json['payment_date']?.toString();
 }

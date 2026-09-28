@@ -9,21 +9,29 @@ class ClaimProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+
   Future<void> loadClaims() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       final response = await ApiClient().get('claims');
-      if (response.data['success']) {
-        _claims = (response.data['data'] as List)
-            .map((e) => ClaimModel.fromJson(e))
-            .toList();
+      if (response.data['success'] == true) {
+        final data = response.data['data'];
+        _claims = data is List
+            ? data.map((e) => ClaimModel.fromJson(Map<String, dynamic>.from(e as Map))).toList()
+            : [];
+      } else {
+        _errorMessage = response.data['message']?.toString() ?? 'Failed to load claims';
       }
     } catch (e) {
-      debugPrint("Claims Error: $e");
+      _errorMessage = ApiClient.errorMessage(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
-    notifyListeners();
   }
 }

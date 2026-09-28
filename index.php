@@ -8,7 +8,19 @@ require_once 'config/condig.php';
 require_once 'helpers/response.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
-$uri = array_values(array_filter(explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'))));
+
+$path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '', '/');
+$base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '')), '/');
+if ($base !== '' && $base !== '.' && str_starts_with($path, $base)) {
+    $path = trim(substr($path, strlen($base)), '/');
+}
+
+$uri = array_values(array_filter(explode('/', $path)));
+
+// Support /index.php/auth/send-otp style paths
+if (($uri[0] ?? '') === 'index.php') {
+    array_shift($uri);
+}
 
 $endpoint = $uri[0] ?? '';
 $action   = $uri[1] ?? '';

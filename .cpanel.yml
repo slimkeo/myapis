@@ -11,3 +11,4 @@ deployment:
     - /bin/cp -R middleware $DEPLOYPATH
 
     - /bin/cp -f index.php $DEPLOYPATH/
+    - /bin/cp -f .htaccess $DEPLOYPATH/

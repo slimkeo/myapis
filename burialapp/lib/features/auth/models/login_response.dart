@@ -1,26 +1,22 @@
+/// Matches `data` from POST /auth/verify-otp
 class LoginResponse {
   final String token;
-  final String userId;
-  final String email;
-  final String name;
+  final int expiresIn;
+  final Map<String, dynamic>? member;
 
   LoginResponse({
     required this.token,
-    required this.userId,
-    required this.email,
-    required this.name,
+    required this.expiresIn,
+    this.member,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
-      token: json['token'] ?? '',
-      userId: json['userId'] ?? '',
-      email: json['email'] ?? '',
-      name: json['name'] ?? '',
+      token: json['token']?.toString() ?? '',
+      expiresIn: int.tryParse(json['expires_in'].toString()) ?? 0,
+      member: json['member'] is Map
+          ? Map<String, dynamic>.from(json['member'] as Map)
+          : null,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'token': token, 'userId': userId, 'email': email, 'name': name};
   }
 }

@@ -6,6 +6,5 @@ class AppConstants {
     {'icon': Icons.assignment, 'label': 'Claims'},
     {'icon': Icons.people, 'label': 'Beneficiaries'},
     {'icon': Icons.receipt_long, 'label': 'Statements'},
-    {'icon': Icons.payment, 'label': 'Payments'},
   ];
 }

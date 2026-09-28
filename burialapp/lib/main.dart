@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
           useMaterial3: true,
+          scaffoldBackgroundColor: Colors.grey[50],
           appBarTheme: const AppBarTheme(elevation: 0, centerTitle: true),
         ),
         home: const AuthCheckScreen(),
@@ -38,16 +39,18 @@ class AuthCheckScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, _) {
-          if (authProvider.isLoggedIn) {
-            return const MainNavigation();
-          } else {
-            return const LoginScreen();
-          }
-        },
-      ),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        if (!authProvider.isInitialized) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (authProvider.isLoggedIn) {
+          return const MainNavigation();
+        }
+        return const LoginScreen();
+      },
     );
   }
 }

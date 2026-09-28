@@ -141,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (_identifierController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Please enter phone or email'),
+                                  content: Text(
+                                    'Please enter passbook, phone, or burial number',
+                                  ),
                                   backgroundColor: Colors.red,
                                 ),
                               );
