@@ -9,17 +9,23 @@ class DashboardController {
     public function index($member_id) {
         $data = [];
 
-        // Claims count
-        $result = $this->conn->query("SELECT COUNT(*) as total FROM claims WHERE member_id = $member_id");
-        $data['claims'] = $result->fetch_assoc()['total'];
+        $stmt = $this->conn->prepare("SELECT COUNT(*) AS total FROM claims WHERE member_id = ?");
+        $stmt->bind_param("i", $member_id);
+        $stmt->execute();
+        $data['claims'] = (int)$stmt->get_result()->fetch_assoc()['total'];
 
-        // Monthly Contribution
-        $result = $this->conn->query("SELECT amount FROM statements WHERE memberid = $member_id AND type = 'contribution' ORDER BY id DESC LIMIT 1");
-        $data['monthly_contribution'] = $result->num_rows > 0 ? $result->fetch_assoc()['amount'] : 150.00;
+        $stmt = $this->conn->prepare("SELECT amount FROM statements WHERE memberid = ? AND type = 'contribution' ORDER BY id DESC LIMIT 1");
+        $stmt->bind_param("i", $member_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data['monthly_contribution'] = $result->num_rows > 0
+            ? (float)$result->fetch_assoc()['amount']
+            : 150.00;
 
-        // Beneficiaries count
-        $result = $this->conn->query("SELECT COUNT(*) as total FROM beneficiaries WHERE member_id = $member_id");
-        $data['beneficiaries'] = $result->fetch_assoc()['total'];
+        $stmt = $this->conn->prepare("SELECT COUNT(*) AS total FROM beneficiaries WHERE member_id = ?");
+        $stmt->bind_param("i", $member_id);
+        $stmt->execute();
+        $data['beneficiaries'] = (int)$stmt->get_result()->fetch_assoc()['total'];
 
         // Policy Status (You can adjust logic)
         $data['policy_status'] = 'Active';

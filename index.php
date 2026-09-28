@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-require_once 'config/db.php';
+require_once 'config/condig.php';
 require_once 'helpers/response.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -17,14 +17,31 @@ if ($method === 'OPTIONS') exit(http_response_code(200));
 
 switch ($endpoint) {
     case 'auth':
+        if ($method !== 'POST') {
+            json_response(false, null, 'Method not allowed', 405);
+        }
+
         require_once 'controllers/AuthController.php';
         $ctrl = new AuthController($conn);
-        
-        if ($action === 'send-otp' && $method === 'POST') $ctrl->sendOtp();
-        if ($action === 'verify-otp' && $method === 'POST') $ctrl->verifyOtp();
+
+        if ($action === 'send-otp') {
+            $ctrl->sendOtp();
+        } elseif ($action === 'verify-otp') {
+            $ctrl->verifyOtp();
+        } else {
+            json_response(false, null, 'Endpoint not found', 404);
+        }
         break;
 
     default:
+        if (!in_array($endpoint, ['dashboard', 'claims', 'beneficiaries', 'statements'], true)) {
+            json_response(false, null, 'Endpoint not found', 404);
+        }
+
+        if ($method !== 'GET') {
+            json_response(false, null, 'Method not allowed', 405);
+        }
+
         // Protected routes
         require_once 'middleware/auth.php';
         $member_id = getMemberId($conn);
@@ -41,7 +58,5 @@ switch ($endpoint) {
         } elseif ($endpoint === 'statements') {
             require_once 'controllers/SubscriptionController.php';
             (new SubscriptionController($conn))->index($member_id);
-        } else {
-            json_response(false, null, 'Endpoint not found', 404);
         }
 }

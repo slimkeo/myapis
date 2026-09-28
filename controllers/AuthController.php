@@ -8,10 +8,14 @@ class AuthController {
 
     public function sendOtp() {
         $input = json_decode(file_get_contents('php://input'), true);
-        $identifier = trim($input['identifier'] ?? '');
+        if (!is_array($input)) {
+            json_response(false, null, 'Invalid JSON request body', 400);
+        }
+
+        $identifier = trim((string)($input['identifier'] ?? ''));
 
         if (empty($identifier)) {
-            json_response(false, null, 'Identifier is required');
+            json_response(false, null, 'Identifier is required', 400);
         }
 
         // Normalize cell number
@@ -30,11 +34,11 @@ class AuthController {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            json_response(false, null, 'Member not found');
+            json_response(false, null, 'Member not found', 404);
         }
 
         $member = $result->fetch_assoc();
-        $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $otp = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
         // Clear previous unused OTPs
         $this->conn->query("DELETE FROM login_otps WHERE member_id = " . (int)$member['id'] . " AND used = 0");
@@ -45,7 +49,7 @@ class AuthController {
             INSERT INTO login_otps (identifier, otp, member_id, cellnumber, expires_at, created_at) 
             VALUES (?, ?, ?, ?, ?, NOW())
         ");
-        $stmt->bind_param("sisss", $normalized, $otp, $member['id'], $member['cellnumber'], $expires_at);
+        $stmt->bind_param("ssiss", $identifier, $otp, $member['id'], $member['cellnumber'], $expires_at);
         $stmt->execute();
 
         $this->sendSms($member['cellnumber'], $otp);
@@ -55,11 +59,19 @@ class AuthController {
 
     public function verifyOtp() {
         $input = json_decode(file_get_contents('php://input'), true);
-        $identifier = trim($input['identifier'] ?? '');
-        $otp = trim($input['otp'] ?? '');
+        if (!is_array($input)) {
+            json_response(false, null, 'Invalid JSON request body', 400);
+        }
+
+        $identifier = trim((string)($input['identifier'] ?? ''));
+        $otp = trim((string)($input['otp'] ?? ''));
 
         if (empty($identifier) || empty($otp)) {
-            json_response(false, null, 'Identifier and OTP required');
+            json_response(false, null, 'Identifier and OTP required', 400);
+        }
+
+        if (!preg_match('/^\d{6}$/', $otp)) {
+            json_response(false, null, 'OTP must be 6 digits', 400);
         }
 
         $normalized = preg_replace('/\D/', '', $identifier);
@@ -78,18 +90,23 @@ class AuthController {
         $result = $stmt->get_result();
 
         if ($result->num_rows === 0) {
-            json_response(false, null, 'Invalid or expired OTP');
+            json_response(false, null, 'Invalid or expired OTP', 401);
         }
 
         $record = $result->fetch_assoc();
         $member_id = $record['member_id'];
 
         // Mark OTP as used
-        $this->conn->query("UPDATE login_otps SET used = 1, used_at = NOW() WHERE id = " . (int)$record['id']);
+        $stmt = $this->conn->prepare("UPDATE login_otps SET used = 1, used_at = NOW() WHERE id = ? AND used = 0");
+        $stmt->bind_param("i", $record['id']);
+        $stmt->execute();
+        if ($stmt->affected_rows !== 1) {
+            json_response(false, null, 'Invalid or expired OTP', 401);
+        }
 
-        // Create short-lived token (3 minutes)
+        // Keep the session duration consistent with the app's persisted login state.
         $token = bin2hex(random_bytes(32));
-        $token_expires = date('Y-m-d H:i:s', strtotime('+3 minutes'));
+        $token_expires = date('Y-m-d H:i:s', strtotime('+30 days'));
 
         // Clear old tokens
         $this->conn->query("DELETE FROM auth_tokens WHERE member_id = " . (int)$member_id);
@@ -99,14 +116,14 @@ class AuthController {
         $stmt->execute();
 
         // Get member data
-        $stmt = $this->conn->prepare("SELECT * FROM members WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no FROM members WHERE id = ?");
         $stmt->bind_param("i", $member_id);
         $stmt->execute();
         $member = $stmt->get_result()->fetch_assoc();
 
         json_response(true, [
             'token' => $token,
-            'expires_in' => 180,
+            'expires_in' => 2592000,
             'member' => $member
         ], 'Login successful');
     }
