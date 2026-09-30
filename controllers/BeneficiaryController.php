@@ -19,7 +19,7 @@ class BeneficiaryController {
                 submission_date,
                 status_date
             FROM beneficiaries
-            WHERE memberid = ?
+            WHERE memberid = 1100001
             ORDER BY submission_date
         ");
         $stmt->bind_param("i", $member_id);
