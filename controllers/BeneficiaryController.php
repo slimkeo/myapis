@@ -11,7 +11,7 @@ class BeneficiaryController {
         $stmt = $this->conn->prepare("
             SELECT
                 id,
-                nameof AS full_name,
+                fullname AS full_name,
                 gender,
                 dob,
                 status,
@@ -20,7 +20,7 @@ class BeneficiaryController {
                 status_date
             FROM beneficiaries
             WHERE memberid = ?
-            ORDER BY nameof
+            ORDER BY submission_date
         ");
         $stmt->bind_param("i", $member_id);
         $stmt->execute();

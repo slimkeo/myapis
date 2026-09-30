@@ -71,7 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   return Column(
                     children: [
                       Text(
-                        'We sent a verification code to',
+                        'We sent a verification code to number associated with:',
                         style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         textAlign: TextAlign.center,
                       ),

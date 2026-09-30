@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Passbook, Phone, Burial Number',
+                      'ID number or  Phone Number',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -100,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _identifierController,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: 'Passbook number, phone, or burial number',
+                        hintText: 'Please type ID number or  Phone Number',
                         hintStyle: TextStyle(color: Colors.grey[400]),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -142,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    'Please enter passbook, phone, or burial number',
+                                    'Please enter ID or phone number',
                                   ),
                                   backgroundColor: Colors.red,
                                 ),

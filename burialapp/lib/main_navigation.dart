@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'features/dashboard/screens/dashboard_screen.dart';
 import 'features/claims/screens/claims_screen.dart';
 import 'features/beneficiaries/screens/beneficiaries_screen.dart';
 import 'features/subscriptions/screens/subscriptions_screen.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'core/constants/app_constants.dart';
+
+// Adjust these import paths to match your project structure
+import 'features/about/screens/about_burial.dart'; // → AboutBurialScreen (or whatever the class is named)
+import 'features/about/screens/terms.dart'; // → TermsScreen
+import 'features/about/screens/about_app.dart'; // → AboutAppScreen
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -47,6 +53,58 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 
+  Future<void> _shareApp() async {
+    // ← put your real Play Store / App Store / website URL here
+    const appLink =
+        'https://play.google.com/store/apps/details?id=com.your.package';
+
+    await Clipboard.setData(const ClipboardData(text: appLink));
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('App link copied to clipboard'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _onMenuSelected(String value) {
+    switch (value) {
+      case 'about_burial':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AboutBurialScreen(),
+          ), // adjust class name if needed
+        );
+        break;
+      case 'share':
+        _shareApp();
+        break;
+      case 'terms':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const TermsScreen(),
+          ), // adjust class name if needed
+        );
+        break;
+      case 'about_app':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AboutAppScreen(),
+          ), // adjust class name if needed
+        );
+        break;
+      case 'logout':
+        _logout(context);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = AppConstants.navItems[_currentIndex]['label'] as String;
@@ -57,10 +115,24 @@ class _MainNavigationState extends State<MainNavigation> {
         title: Text(title),
         centerTitle: true,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-            tooltip: 'Logout',
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'More options',
+            onSelected: _onMenuSelected,
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'about_burial',
+                child: Text('About SNAT Burial'),
+              ),
+              const PopupMenuItem(value: 'share', child: Text('Share App')),
+              const PopupMenuItem(value: 'terms', child: Text('Terms')),
+              const PopupMenuItem(value: 'about_app', child: Text('About App')),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'logout',
+                child: Text('Logout', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
         ],
       ),

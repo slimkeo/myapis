@@ -23,12 +23,17 @@ class SubscriptionProvider with ChangeNotifier {
         final data = response.data['data'];
         _statements = data is List
             ? data
-                .map((e) => SubscriptionModel.fromJson(Map<String, dynamic>.from(e as Map)))
-                .toList()
+                  .map(
+                    (e) => SubscriptionModel.fromJson(
+                      Map<String, dynamic>.from(e as Map),
+                    ),
+                  )
+                  .toList()
             : [];
       } else {
         _errorMessage =
-            response.data['message']?.toString() ?? 'Failed to load statements';
+            response.data['message']?.toString() ??
+            'Failed to load subscriptions';
       }
     } catch (e) {
       _errorMessage = ApiClient.errorMessage(e);

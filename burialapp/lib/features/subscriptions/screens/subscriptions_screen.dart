@@ -26,7 +26,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     return Consumer<SubscriptionProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading && provider.statements.isEmpty) {
-          return const LoadingWidget(message: 'Loading statements...');
+          return const LoadingWidget(message: 'Loading subscriptions...');
         }
         if (provider.errorMessage != null && provider.statements.isEmpty) {
           return AppErrorWidget(
@@ -35,7 +35,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
           );
         }
         if (provider.statements.isEmpty) {
-          return const Center(child: Text('No statements found'));
+          return const Center(child: Text('No subscriptions found'));
         }
 
         return RefreshIndicator(
@@ -77,13 +77,19 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                           const SizedBox(height: 4),
                           Text(
                             Helpers.formatDate(s.date),
-                            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
                           ),
                           if (s.source != null && s.source!.isNotEmpty) ...[
                             const SizedBox(height: 2),
                             Text(
                               s.source!,
-                              style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                           const SizedBox(height: 6),
