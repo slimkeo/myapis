@@ -7,7 +7,6 @@ class BeneficiaryController {
     }
 
     public function index($member_id) {
-        $member_id=1100001;
         // Table columns: memberid, nameof (not member_id / full_name); no maturity_status
         $stmt = $this->conn->prepare("
             SELECT

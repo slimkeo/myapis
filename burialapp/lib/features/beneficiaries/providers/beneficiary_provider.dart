@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart'; // for debugPrint
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../models/beneficiary_model.dart';
@@ -12,6 +12,32 @@ class BeneficiaryProvider with ChangeNotifier {
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  // ===== SUMMARY COUNTS =====
+  int get totalBeneficiaries => _beneficiaries.length;
+
+  int get payableBeneficiaries =>
+      _beneficiaries.where((b) => b.isPayable).length;
+
+  int get payableMembersCount =>
+      _beneficiaries.where((b) => b.isPayable && !b.isSpouse).length;
+
+  int get payableSpousesCount =>
+      _beneficiaries.where((b) => b.isPayable && b.isSpouse).length;
+
+  // REPLACEE helper
+  bool get hasBenefittedReplaced => _beneficiaries.any(
+    (b) =>
+        b.status.toUpperCase().trim().replaceAll(' ', '') ==
+        'BENEFITTED-REPLACED',
+  );
+
+  String maturityOf(BeneficiaryModel b) {
+    if (b.isReplacee) {
+      return hasBenefittedReplaced ? 'Matured' : 'Waiting';
+    }
+    return b.maturityStatus;
+  }
 
   Future<void> loadBeneficiaries() async {
     _isLoading = true;
