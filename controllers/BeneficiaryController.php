@@ -6,12 +6,12 @@ class BeneficiaryController {
         $this->conn = $conn;
     }
 
-    public function index($member_id) {
+    public function index(1100001) {
         // Table columns: memberid, nameof (not member_id / full_name); no maturity_status
         $stmt = $this->conn->prepare("
             SELECT
                 id,
-                fullname AS full_name,
+                fullname,
                 gender,
                 dob,
                 status,
@@ -19,7 +19,7 @@ class BeneficiaryController {
                 submission_date,
                 status_date
             FROM beneficiaries
-            WHERE memberid = 1100001
+            WHERE memberid = ?
             ORDER BY submission_date
         ");
         $stmt->bind_param("i", $member_id);

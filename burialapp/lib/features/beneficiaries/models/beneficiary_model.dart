@@ -10,11 +10,12 @@ class BeneficiaryModel {
 
   BeneficiaryModel.fromJson(Map<String, dynamic> json)
     : id = json['id'].toString(),
-      fullName = (json['full_name'] ?? json['nameof'] ?? '').toString(),
+      fullName = (json['fullname'] ?? '').toString(),
       gender = (json['gender'] ?? '').toString(),
       dob = (json['dob'] ?? '').toString(),
       status = (json['status'] ?? '').toString(),
-      isSpouse = json['is_spouse'] == true ||
+      isSpouse =
+          json['is_spouse'] == true ||
           json['is_spouse'] == 1 ||
           json['is_spouse']?.toString() == '1',
       submissionDate = json['submission_date']?.toString(),

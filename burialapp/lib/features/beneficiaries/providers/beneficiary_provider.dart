@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart'; // for debugPrint
 import 'package:flutter/material.dart';
 import '../../../core/network/api_client.dart';
 import '../models/beneficiary_model.dart';
@@ -19,19 +20,29 @@ class BeneficiaryProvider with ChangeNotifier {
 
     try {
       final response = await ApiClient().get('beneficiaries');
+
       if (response.data['success'] == true) {
         final data = response.data['data'];
         _beneficiaries = data is List
             ? data
-                .map((e) => BeneficiaryModel.fromJson(Map<String, dynamic>.from(e as Map)))
-                .toList()
+                  .map(
+                    (e) => BeneficiaryModel.fromJson(
+                      Map<String, dynamic>.from(e as Map),
+                    ),
+                  )
+                  .toList()
             : [];
       } else {
         _errorMessage =
-            response.data['message']?.toString() ?? 'Failed to load beneficiaries';
+            response.data['message']?.toString() ??
+            'Failed to load beneficiaries';
+        debugPrint('BeneficiaryProvider error: $_errorMessage');
+        debugPrint('Full response: ${response.data}');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       _errorMessage = ApiClient.errorMessage(e);
+      debugPrint('BeneficiaryProvider exception: $e');
+      debugPrint('StackTrace: $stackTrace');
     } finally {
       _isLoading = false;
       notifyListeners();
