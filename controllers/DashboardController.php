@@ -40,11 +40,15 @@ class DashboardController {
         $member = $stmt->get_result()->fetch_assoc();
 
         if ($member) {
-            if ((int)($member['is_alive'] ?? 1) === 0) {
+            $isAlive = (int)($member['is_alive'] ?? 1);
+            $status  = (int)($member['status'] ?? 1);
+        
+            if ($isAlive === 0) {
                 $data['policy_status'] = 'Deceased';
+            } elseif ($status === 0) {
+                $data['policy_status'] = 'Inactive';
             } else {
-                $status = trim((string)($member['status'] ?? ''));
-                $data['policy_status'] = $status !== '' ? $status : 'Active';
+                $data['policy_status'] = 'Active';
             }
         } else {
             $data['policy_status'] = 'Active';

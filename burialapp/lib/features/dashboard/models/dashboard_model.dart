@@ -21,17 +21,18 @@ class DashboardModel {
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
     return DashboardModel(
-      claims: json['claims'] ?? 0,
+      claims: int.tryParse(json['claims'].toString()) ?? 0,
       monthlyContribution:
           double.tryParse(json['monthly_contribution'].toString()) ?? 0.0,
-      beneficiaries: json['beneficiaries'] ?? 0,
-      policyStatus: json['policy_status'] ?? 'Active',
+      beneficiaries: int.tryParse(json['beneficiaries'].toString()) ?? 0,
+      policyStatus: json['policy_status']?.toString() ?? 'Active',
       coverageAmount:
           double.tryParse(json['coverage_amount'].toString()) ?? 15000.0,
     );
   }
 
-  /// Calculate using exact same rules as Beneficiaries
+  /// Same formula as BeneficiariesScreen:
+  /// principal + (payable members × memberFee) + (payable spouses × spouseFee)
   factory DashboardModel.calculate({
     required int claims,
     required String policyStatus,

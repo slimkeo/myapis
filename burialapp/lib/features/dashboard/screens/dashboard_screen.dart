@@ -31,6 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (provider.isLoading && provider.dashboard == null) {
           return const LoadingWidget(message: 'Loading dashboard...');
         }
+
         if (provider.errorMessage != null && provider.dashboard == null) {
           return AppErrorWidget(
             message: provider.errorMessage!,
@@ -39,6 +40,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         }
 
         final data = provider.dashboard;
+
+        // Same formula as BeneficiariesScreen:
+        // Total = E30 + (members × E15) + (spouses × E23)
+        const principalFee = DashboardProvider.principalFee;
+        const memberFee = DashboardProvider.memberFee;
+        const spouseFee = DashboardProvider.spouseFee;
+        final membersTotal = (data?.payableMembers ?? 0) * memberFee;
+        final spousesTotal = (data?.payableSpouses ?? 0) * spouseFee;
+        final totalMonthly = principalFee + membersTotal + spousesTotal;
+
         return RefreshIndicator(
           onRefresh: provider.loadDashboard,
           child: ListView(
@@ -80,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 12),
                 _InfoCard(
                   title: 'Monthly contribution',
-                  value: Helpers.formatCurrency(data.monthlyContribution),
+                  value: Helpers.formatCurrency(totalMonthly),
                   icon: Icons.payments_outlined,
                 ),
                 const SizedBox(height: 12),
@@ -193,3 +204,4 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
+

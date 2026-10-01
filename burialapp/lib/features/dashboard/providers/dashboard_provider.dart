@@ -13,10 +13,10 @@ class DashboardProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   DashboardModel? get dashboard => _dashboard;
 
-  // Fees (match your PHP fee settings)
+  // Must match beneficiaries_screen.dart fee constants
   static const double principalFee = 30.0;
   static const double memberFee = 15.0;
-  static const double spouseFee = 15.0;
+  static const double spouseFee = 23.0;
 
   Future<void> loadDashboard() async {
     _isLoading = true;
@@ -24,7 +24,6 @@ class DashboardProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Load dashboard base data
       final dashResponse = await ApiClient().get('dashboard');
 
       if (dashResponse.data['success'] != true) {
@@ -34,9 +33,16 @@ class DashboardProvider with ChangeNotifier {
         return;
       }
 
-      final data = Map<String, dynamic>.from(dashResponse.data['data'] as Map);
+      final rawData = dashResponse.data['data'];
+      if (rawData is! Map) {
+        _errorMessage = 'Invalid dashboard response';
+        return;
+      }
 
-      // 2. Load beneficiaries (needed for correct calculation)
+      final data = Map<String, dynamic>.from(rawData);
+
+      // Load beneficiaries so monthly contribution uses the same
+      // payable-member / payable-spouse rules as Beneficiaries screen.
       final benResponse = await ApiClient().get('beneficiaries');
       List<BeneficiaryModel> beneficiaries = [];
 
@@ -53,10 +59,9 @@ class DashboardProvider with ChangeNotifier {
         }
       }
 
-      // 3. Calculate monthly contribution the correct way
       _dashboard = DashboardModel.calculate(
-        claims: data['claims'] ?? 0,
-        policyStatus: data['policy_status'] ?? 'Active',
+        claims: int.tryParse(data['claims'].toString()) ?? 0,
+        policyStatus: data['policy_status']?.toString() ?? 'Active',
         coverageAmount:
             double.tryParse(data['coverage_amount'].toString()) ?? 15000.0,
         beneficiaries: beneficiaries,

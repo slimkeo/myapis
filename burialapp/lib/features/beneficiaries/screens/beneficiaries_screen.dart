@@ -201,7 +201,7 @@ class _PolicySummary extends StatelessWidget {
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
                 Text(
-                  'Payable Members ($payableMembersCount × E${memberFee.toStringAsFixed(2)}): '
+                  'Payable Beneficiaries ($payableMembersCount × E${memberFee.toStringAsFixed(2)}): '
                   'E${membersTotal.toStringAsFixed(2)}',
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
