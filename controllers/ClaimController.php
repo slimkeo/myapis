@@ -11,7 +11,7 @@ class ClaimController {
             SELECT
                 c.id,
                 c.claim_type,
-                COALESCE(b.nameof, 'N/A') AS beneficiary,
+                COALESCE(b.fullname, 'N/A') AS beneficiary,
                 c.amount,
                 c.claim_date,
                 c.status,
