@@ -116,7 +116,7 @@ class AuthController {
         $stmt->execute();
 
         // Get member data
-        $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no FROM members WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no, nominee FROM members WHERE id = ?");
         $stmt->bind_param("i", $member_id);
         $stmt->execute();
         $member = $stmt->get_result()->fetch_assoc();

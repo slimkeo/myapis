@@ -65,6 +65,7 @@ class AuthProvider with ChangeNotifier {
         'name': member.name,
         'cellnumber': member.cellnumber,
         'idnumber': member.idnumber,
+        'nominee': member.nominee,
         'passbook_no': member.passbookNo,
       }),
     );
@@ -87,7 +88,9 @@ class AuthProvider with ChangeNotifier {
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(res.data['message']?.toString() ?? 'Failed to send OTP'),
+            content: Text(
+              res.data['message']?.toString() ?? 'Failed to send OTP',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -137,7 +140,9 @@ class AuthProvider with ChangeNotifier {
       } else if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(res.data['message']?.toString() ?? 'Verification failed'),
+            content: Text(
+              res.data['message']?.toString() ?? 'Verification failed',
+            ),
             backgroundColor: Colors.red,
           ),
         );

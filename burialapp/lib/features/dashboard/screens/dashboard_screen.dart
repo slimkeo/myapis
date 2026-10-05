@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               Text(
-                'Hello, ${member?.fullName ?? 'Member'}',
+                'Hello, ${member?.fullName ?? 'Member'} (No: ${member?.id ?? 'N/A'})',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Policy overview',
+                'Nominee: ${member?.nominee ?? 'N/A'}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
               const SizedBox(height: 20),
@@ -204,4 +204,3 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
-

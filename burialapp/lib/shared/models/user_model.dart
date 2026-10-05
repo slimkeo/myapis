@@ -5,6 +5,7 @@ class UserModel {
   final String? cellnumber;
   final String? idnumber;
   final String? passbookNo;
+  final String? nominee;
 
   UserModel.fromJson(Map<String, dynamic> json)
     : id = int.tryParse(json['id'].toString()) ?? 0,
@@ -12,6 +13,7 @@ class UserModel {
       name = json['name']?.toString() ?? '',
       cellnumber = json['cellnumber']?.toString(),
       idnumber = json['idnumber']?.toString(),
+      nominee = json['nominee']?.toString(),
       passbookNo = json['passbook_no']?.toString();
 
   String get fullName {

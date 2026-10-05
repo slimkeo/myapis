@@ -40,6 +40,7 @@ class DashboardController {
         $member = $stmt->get_result()->fetch_assoc();
 
         if ($member) {
+            $data['nominee'] = $member['nominee'] ?? '';
             $isAlive = (int)($member['is_alive'] ?? 1);
             $status  = (int)($member['status'] ?? 1);
         
