@@ -22,6 +22,9 @@ class AuthProvider with ChangeNotifier {
   UserModel? _member;
   UserModel? get member => _member;
 
+  String? _nominee;
+  String? get nominee => _nominee;
+
   AuthProvider() {
     ApiClient().onUnauthorized = _handleUnauthorized;
     _checkLoginStatus();
@@ -65,7 +68,6 @@ class AuthProvider with ChangeNotifier {
         'name': member.name,
         'cellnumber': member.cellnumber,
         'idnumber': member.idnumber,
-        'nominee': member.nominee,
         'passbook_no': member.passbookNo,
       }),
     );
@@ -128,6 +130,9 @@ class AuthProvider with ChangeNotifier {
             Map<String, dynamic>.from(data['member'] as Map),
           );
           await _persistMember(_member);
+          if (data['nominee'] != null) {
+            _nominee = data['nominee']?.toString() ?? '';
+          }
         }
 
         _isLoggedIn = true;

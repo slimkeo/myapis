@@ -115,8 +115,16 @@ class AuthController {
         $stmt->bind_param("iss", $member_id, $token, $token_expires);
         $stmt->execute();
 
+        //get nominee
+        $stmt = $this->conn->prepare("SELECT nominee FROM members WHERE id = ?");
+        $stmt->bind_param("i", $member_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $nominee = $result->fetch_assoc();
+        $nominee = $nominee['nominee'];
+
         // Get member data
-        $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no, nominee FROM members WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no FROM members WHERE id = ?");
         $stmt->bind_param("i", $member_id);
         $stmt->execute();
         $member = $stmt->get_result()->fetch_assoc();
@@ -124,7 +132,8 @@ class AuthController {
         json_response(true, [
             'token' => $token,
             'expires_in' => 2592000,
-            'member' => $member
+            'member' => $member,
+            'nominee' => $nominee
         ], 'Login successful');
     }
 

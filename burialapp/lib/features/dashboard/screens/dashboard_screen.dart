@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Nominee: ${member?.nominee ?? 'N/A'}',
+                'Nominee: ${context.watch<AuthProvider>().nominee ?? 'N/A'}',
                 style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
               const SizedBox(height: 20),
