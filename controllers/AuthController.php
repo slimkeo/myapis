@@ -131,7 +131,7 @@ class AuthController {
             'token' => $token,
             'expires_in' => 2592000,
             'member' => $member,
-            'nominee' => $nominee
+            'nominee' => $nominee['fullname']
         ], 'Login successful');
     }
 
