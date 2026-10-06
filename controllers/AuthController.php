@@ -116,12 +116,10 @@ class AuthController {
         $stmt->execute();
 
         //get nominee
-        $stmt = $this->conn->prepare("SELECT nominee FROM members WHERE id = ?");
-        $stmt->bind_param("i", $member_id);
+        $stmt = $this->conn->prepare("SELECT `id`, `member_id`, `fullname`, `user`, `createdate` FROM `nominee` WHERE `member_id`=".$member_id." ORDER BY `createdate` DESC LIMIT 1");
         $stmt->execute();
         $result = $stmt->get_result();
         $nominee = $result->fetch_assoc();
-        $nominee = $nominee['nominee'];
 
         // Get member data
         $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no FROM members WHERE id = ?");
