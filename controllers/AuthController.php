@@ -115,11 +115,14 @@ class AuthController {
         $stmt->bind_param("iss", $member_id, $token, $token_expires);
         $stmt->execute();
 
-        //get nominee
-        $stmt = $this->conn->prepare("SELECT `id`, `member_id`, `fullname`, `user`, `createdate` FROM `nominee` WHERE `member_id`=".$member_id." ORDER BY `createdate` DESC LIMIT 1");
+        // Get nominee (safe when member has none)
+        $stmt = $this->conn->prepare(
+            "SELECT `fullname` FROM `nominee` WHERE `member_id` = ? ORDER BY `createdate` DESC LIMIT 1"
+        );
+        $stmt->bind_param("i", $member_id);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $nominee = $result->fetch_assoc();
+        $nomineeRow = $stmt->get_result()->fetch_assoc();
+        $nomineeName = is_array($nomineeRow) ? ($nomineeRow['fullname'] ?? null) : null;
 
         // Get member data
         $stmt = $this->conn->prepare("SELECT id, surname, name, cellnumber, idnumber, passbook_no FROM members WHERE id = ?");
@@ -131,7 +134,7 @@ class AuthController {
             'token' => $token,
             'expires_in' => 2592000,
             'member' => $member,
-            'nominee' => $nominee['fullname']
+            'nominee' => $nomineeName
         ], 'Login successful');
     }
 

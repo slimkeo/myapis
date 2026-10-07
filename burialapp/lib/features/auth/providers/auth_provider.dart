@@ -33,6 +33,7 @@ class AuthProvider with ChangeNotifier {
   void _handleUnauthorized() {
     _isLoggedIn = false;
     _member = null;
+    _nominee = null;
     notifyListeners();
   }
 
@@ -48,6 +49,11 @@ class AuthProvider with ChangeNotifier {
       } catch (_) {
         await prefs.remove('member');
       }
+    }
+
+    final savedNominee = prefs.getString('nominee');
+    if (savedNominee != null && savedNominee.isNotEmpty) {
+      _nominee = savedNominee;
     }
 
     _isInitialized = true;
@@ -71,6 +77,15 @@ class AuthProvider with ChangeNotifier {
         'passbook_no': member.passbookNo,
       }),
     );
+  }
+
+  Future<void> _persistNominee(String? nominee) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (nominee == null || nominee.isEmpty) {
+      await prefs.remove('nominee');
+      return;
+    }
+    await prefs.setString('nominee', nominee);
   }
 
   Future<void> sendOtp(String id, BuildContext context) async {
@@ -130,10 +145,13 @@ class AuthProvider with ChangeNotifier {
             Map<String, dynamic>.from(data['member'] as Map),
           );
           await _persistMember(_member);
-          if (data['nominee'] != null) {
-            _nominee = data['nominee']?.toString() ?? '';
-          }
         }
+
+        final nomineeValue = data['nominee']?.toString().trim();
+        _nominee = (nomineeValue != null && nomineeValue.isNotEmpty)
+            ? nomineeValue
+            : null;
+        await _persistNominee(_nominee);
 
         _isLoggedIn = true;
         notifyListeners();
@@ -173,8 +191,10 @@ class AuthProvider with ChangeNotifier {
     try {
       await ApiClient().logout();
       await _persistMember(null);
+      await _persistNominee(null);
       _isLoggedIn = false;
       _member = null;
+      _nominee = null;
       _identifier = null;
     } finally {
       _isLoading = false;
