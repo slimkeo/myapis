@@ -26,10 +26,10 @@ class AuthController {
 
         $stmt = $this->conn->prepare("
             SELECT id, cellnumber FROM members 
-            WHERE idnumber = ? OR passbook_no = ? OR cellnumber = ? OR cellnumber = ? 
+            WHERE idnumber = ? OR cellnumber = ? OR cellnumber = ? 
             LIMIT 1
         ");
-        $stmt->bind_param("ssss", $identifier, $identifier, $identifier, $normalized);
+        $stmt->bind_param("sss", $identifier, $identifier, $normalized);
         $stmt->execute();
         $result = $stmt->get_result();
 
